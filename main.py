@@ -20,6 +20,7 @@ path = 'DDP_dump/'
 
 if __name__ == '__main__':
 
+    loaded_data = data()
     if generateFeatures:
         """Unzip files in case they are not"""
         # data.unzipFiles(pathToZipped)
@@ -27,7 +28,6 @@ if __name__ == '__main__':
         """Loading data"""
 
 
-        loaded_data = data()
         loaded_data.load_data(path)
 
         textMeassages = loaded_data.messages["texts"]
@@ -39,12 +39,12 @@ if __name__ == '__main__':
 
         """Exporting data without the text column"""
 
-        loaded_data.messages.to_csv(outputFolder + 'messages.csv')
-        loaded_data.media.to_csv(outputFolder + 'media.csv')
+        loaded_data.messages.to_csv(f'{outputFolder}messages.csv')
+        loaded_data.media.to_csv(f'{outputFolder}media.csv')
 
         # export the text file in a seperate file if necessary
-        textMeassages.to_csv(outputFolder + 'messagesOnlyText.csv')
-        textMedia.to_csv(outputFolder + 'mediaOnlyText.csv')
+        textMeassages.to_csv(f'{outputFolder}messagesOnlyText.csv')
+        textMedia.to_csv(f'{outputFolder}mediaOnlyText.csv')
 
         """Generate the textual statistics of the data"""
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         dfTextualMedia = textProcessor.one_vector_stylistic(textMedia)
 
         dfTextualMessages.to_csv(outputFolder + 'messagesTextualFeatures.csv')
-        dfTextualMedia.to_csv(outputFolder + 'mediaTextualFeatures.csv')
+        dfTextualMedia.to_csv(f'{outputFolder}mediaTextualFeatures.csv')
 
         """Generate the sentimental features of the data"""
         print()
@@ -66,25 +66,23 @@ if __name__ == '__main__':
         dfSentimentMedia = sentimentProcessor.one_vector_sentiment(textMedia)
 
         dfSentimentMessages.to_csv(outputFolder + 'messagesSentimentFeatures.csv')
-        dfSentimentMedia.to_csv(outputFolder + 'mediaSentimentFeatures.csv')
+        dfSentimentMedia.to_csv(f'{outputFolder}mediaSentimentFeatures.csv')
 
     else:
         """Loading features from the files"""
-        loaded_data = data()
+        if os.path.isfile(f'{outputFolder}messages.csv'):
+            loaded_data.messages = pd.read_csv(f'{outputFolder}messages.csv')
+        if os.path.isfile(f'{outputFolder}media.csv'):
+            loaded_data.media = pd.read_csv(f'{outputFolder}media.csv')
 
-        if (os.path.isfile(outputFolder + 'messages.csv')):
-            loaded_data.messages = pd.read_csv(outputFolder + 'messages.csv')
-        if (os.path.isfile(outputFolder + 'media.csv')):
-            loaded_data.media = pd.read_csv(outputFolder + 'media.csv')
-
-        if (os.path.isfile(outputFolder + 'messagesTextualFeatures.csv')):
+        if os.path.isfile(f'{outputFolder}messagesTextualFeatures.csv'):
             dfTextualMessages = pd.read_csv(outputFolder + 'messagesTextualFeatures.csv')
-        if (os.path.isfile(outputFolder + 'mediaTextualFeatures.csv')):
+        if os.path.isfile(f'{outputFolder}mediaTextualFeatures.csv'):
             dfTextualMedia = pd.read_csv(outputFolder + 'mediaTextualFeatures.csv')
 
-        if (os.path.isfile(outputFolder + 'messagesSentimentFeatures.csv')):
+        if os.path.isfile(f'{outputFolder}messagesSentimentFeatures.csv'):
             dfSentimentMessages = pd.read_csv(outputFolder + 'messagesSentimentFeatures.csv')
-        if (os.path.isfile(outputFolder + 'mediaSentimentFeatures.csv')):
+        if os.path.isfile(f'{outputFolder}mediaSentimentFeatures.csv'):
             dfSentimentMedia = pd.read_csv(outputFolder + 'mediaSentimentFeatures.csv')
 
 

@@ -31,9 +31,9 @@ class sentiment:
 
             self.lst.append(global_vec)
 
-        df = pd.DataFrame(self.lst, columns =['Vpos', 'Vneut', 'Vneg', 'Vcompound'], dtype = float)
-
-        return df
+        return pd.DataFrame(
+            self.lst, columns=['Vpos', 'Vneut', 'Vneg', 'Vcompound'], dtype=float
+        )
 
 if __name__ == '__main__':
 

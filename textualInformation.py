@@ -12,31 +12,26 @@ class textualInformation:
         all_emojis = list(emoji.UNICODE_EMOJI.keys())
 
     def countEmoticons(self,text):
-        emoji_counter = 0
         data = regex.findall(r'\X', text)
-        for word in data:
-            if any(char in emoji.UNICODE_EMOJI for char in word):
-                emoji_counter += 1
-
-        return emoji_counter
+        return sum(any(char in emoji.UNICODE_EMOJI for char in word) for word in data)
 
     def question_marks(self,text):
         text = re.sub(r'([^a-zA-Z0-9])', r' \1 ', text)
-        count = len(re.findall(r'[?¿]', text))
-        return count
+        return len(re.findall(r'[?¿]', text))
 
     def exclamation_marks(self,text):
         text = re.sub(r'([^a-zA-Z0-9])', r' \1 ', text)
-        count = len(re.findall(r'[!¡]', text))
-        return count
+        return len(re.findall(r'[!¡]', text))
 
     def sentence_len(self,text):
-        count = len(text.split())
-        return count
+        return len(text.split())
 
     def consecutive_chars(self,text):
-        count = sum([count for count in [sum(1 for _ in group) for label, group in groupby(text)] if count > 1])
-        return count
+        return sum(
+            count
+            for count in [sum(1 for _ in group) for label, group in groupby(text)]
+            if count > 1
+        )
 
     def upper_case(self,text):
         up_count = len(re.findall(r'[A-Z]', text))
@@ -49,18 +44,15 @@ class textualInformation:
 
     def URL(self,text):
         text = re.sub(r"((http|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?)", " htm ", text)
-        count = len(re.findall(r'http', text))
-        return count
+        return len(re.findall(r'http', text))
 
     def mention(self,text):
         text = re.sub(r"(@[a-zA-Z_0-9]+)", " usr ", text)
-        count = len(re.findall(r'usr', text))
-        return count
+        return len(re.findall(r'usr', text))
 
     def hashtags(self,text):
         text = re.sub(r"(#[a-zA-Z_0-9]+)", " hsh ", text)
-        count = len(re.findall(r'hsh', text))
-        return count
+        return len(re.findall(r'hsh', text))
 
     def one_vector_stylistic(self, sentences):
         lst = []
@@ -69,8 +61,7 @@ class textualInformation:
             if len(sentence) < 2:
                 lst.append([0,0,0,0,0,0,0,0,0])
             else:
-                global_vec = []
-                global_vec.append(self.question_marks(sentence))
+                global_vec = [self.question_marks(sentence)]
                 global_vec.append(self.exclamation_marks(sentence))
                 global_vec.append(self.sentence_len(sentence))
                 global_vec.append(self.consecutive_chars(sentence))
@@ -82,9 +73,21 @@ class textualInformation:
 
                 lst.append(global_vec)
 
-        dfTextual = pd.DataFrame(lst, columns =['question_marks', 'exclamation_marks', 'sentence_len', 'consecutive_chars', 'upper_case', 'URL', 'mention', 'hashtags', 'countEmoticons'], dtype = float)
-
-        return dfTextual
+        return pd.DataFrame(
+            lst,
+            columns=[
+                'question_marks',
+                'exclamation_marks',
+                'sentence_len',
+                'consecutive_chars',
+                'upper_case',
+                'URL',
+                'mention',
+                'hashtags',
+                'countEmoticons',
+            ],
+            dtype=float,
+        )
 
 if __name__ == '__main__':
 

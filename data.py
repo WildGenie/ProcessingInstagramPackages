@@ -43,9 +43,6 @@ class data:
             except:
                 print("Couldn't extract" + file_name)
 
-                #if the zip file could's be extracted, continue to the next one
-                pass
-
     # function to analyse the messages file
     def analyseMessagesFile(self, pathToFolder, username):
 
@@ -61,10 +58,10 @@ class data:
             #load the json file
             messagesData = json.loads(txt_data,strict=False)
 
-            for i in range(0,len(messagesData)):
+            for i in range(len(messagesData)):
                 if 'conversation' in messagesData[i]:
                     s = len(messagesData[i]['conversation'])
-                    for j in range(0,s):
+                    for j in range(s):
                         jsonConversation = messagesData[i]['conversation'][j]
 
                         text=""
@@ -121,7 +118,7 @@ class data:
 
             for typeOfMedia in listOfMedia:
                 if typeOfMedia in data:
-                    for i in range(0,len(data[typeOfMedia])):
+                    for i in range(len(data[typeOfMedia])):
                         date = data[typeOfMedia][i]['taken_at']
                         date = str(date).replace("+00:00","")
                         date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
@@ -159,15 +156,13 @@ class data:
         listOfFolders = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name)) ]
 
         for f in listOfFolders:
-            # initial value to the username is known to cover the cases that a username will not be extracted
-            username = 'unknown'
-            listOfUsernames = []
             pathOfUserFolder=path + f
 
             jsonFiles = os.listdir(pathOfUserFolder)
 
+            username = 'unknown'
             if 'profile.json' in jsonFiles:
-                with open(pathOfUserFolder+'/profile.json') as f:
+                with open(f'{pathOfUserFolder}/profile.json') as f:
                     profileData = yaml.load(f.read())
 
                     if 'username' in profileData:
@@ -178,33 +173,32 @@ class data:
             else:
                 print('folder name will be used because there was no profile json file for: ', pathOfUserFolder)
                 username = (pathOfUserFolder.split("/")[-1]).split("_")[0]
-            listOfUsernames.append(username)
-
+            listOfUsernames = [username]
             if 'messages.json' in jsonFiles:
-                self.analyseMessagesFile(pathOfUserFolder+'/messages.json', username)
+                self.analyseMessagesFile(f'{pathOfUserFolder}/messages.json', username)
                 print('processing json file: messages.json of user ', username)
             else:
                 print('there was no messages json file at: ', pathOfUserFolder)
 
             # check and process additional messages files
             for i in range(1,10):
-                filename = 'messages_' + str(i) + '.json'
+                filename = f'messages_{str(i)}.json'
                 if filename in jsonFiles:
-                    self.analyseMessagesFile(pathOfUserFolder+'/' + filename, username)
+                    self.analyseMessagesFile(f'{pathOfUserFolder}/{filename}', username)
                     print('processing json file: ', filename, 'of user ', username)
 
             if 'media.json' in jsonFiles:
-                self.analyseMediaFile(pathOfUserFolder+'/media.json', username)
+                self.analyseMediaFile(f'{pathOfUserFolder}/media.json', username)
                 print('processing json file: media.json of user ', username)
             else:
                 print('there was no media json file at: ', pathOfUserFolder, username)
 
             # check and process additional media files
             for i in range(1,10):
-                filename = 'media_' + str(i) + '.json'
+                filename = f'media_{str(i)}.json'
                 if filename in jsonFiles:
-                    self.analyseMediaFile(pathOfUserFolder+'/' + filename, username)
+                    self.analyseMediaFile(f'{pathOfUserFolder}/{filename}', username)
                     print('processing json file: ', filename, 'of user ', username)
 
-        print('Finished processing folder:' + username)
+        print(f'Finished processing folder:{username}')
 
